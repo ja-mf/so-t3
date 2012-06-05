@@ -1,0 +1,30 @@
+3.1a 	key_t ftok(const char *pathname, int proj_id)
+			Crea una clave comun para luego ser usada con mesgget(), semget() o shmget().
+		La clave es creada en base a un archivo especificado en pathname (el cual
+		debe ser accesible) y los 8 bits menos significativos de proj_id, los
+		cuales deben ser distintos de 0. Para un mismo pathname y project_id, el resultado
+		de la clave es la misma, para obtener una clave distinta, alguno de los dos debe
+		variar.
+
+3.1b	- int shmget(key_t key, size_t size, int shmflg)
+			Retorna el identificador de una seccion de memoria compartida, asociada
+		a la llave key. Si key contiene el valor IPC_PRIVATE, una seccion de memoria
+		compartida es creada, de tamaño size*PAGE_SIZE.
+
+		- void *shmat(int shmid, const void *shmaddr, int shmflg)
+			Relaciona el segmento de memoria identificado con shmid con el 
+		espacio de direcciones del	proceso quien llama a la funcion. La direccion
+		de la memoria asignada esta determinado por shmaddr.
+
+			Si shmaddr es NULL, el sistema escogera una direccion inutilizada
+		para asignar el segmento shmidi.
+
+		- int shmdt(const void *shmaddr)
+			Desasocia el segmento de memoria ubicado en shmaddr del espacio
+		de direcciones del proceso llamante.
+
+		- int shmctl(int shmid, int cmd, struct shmid_ds *buf)
+			Hace la operacion especificada en cmd al segmento de memoria shmid.
+
+
+Recomiendo ver man ftok, shmget, shmat y shmdt para informacion mas especifica D:
