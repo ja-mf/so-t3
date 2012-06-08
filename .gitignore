@@ -15,3 +15,7 @@
 *.swp
 *.swo
 *.~
+
+# binaries
+palGato
+m_palGato
