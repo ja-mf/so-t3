@@ -33,11 +33,6 @@ Numero del proceso en la posicion del arreglo
 0 0 0 0 0 0 0 0 0 0
 */
 
-typedef struct algo{
-	int tablero[100];
-	int jugadores;
-	int turno_actual;
-}moderador;
 
 int comprobar(int *tablero){
 	int i,j;
@@ -51,13 +46,11 @@ int comprobar(int *tablero){
 				break;
 			else if(j==9){
 				gano = 1;
-				break;
-			}
-		if(gano == 1)
-			break;	
+				return gano;
+			}	
 	}
 	
-	for (i=0;i<10;i++){			//de izquierda a derecha
+	for (i=0;i<10;i++){			//de arriba a abajo
 		for(j=1;j<100;j=j+10)
 			if(tablero[i+j]==0)
 				break;
@@ -65,12 +58,61 @@ int comprobar(int *tablero){
 				break;
 			else if(j==90){
 				gano = 1;
-				break;
+				return gano;
 			}
-		if(gano == 1)
-			break;	
 	}
 	
-	
+	for (i=11;i<100;i=i+11){			//diagonal 1
+		if(tablero[i]==0)
+			break;
+		else if( !(tablero[i] == tablero[i-11]) )
+			break;
+		else if(i==99){
+			gano = 1;
+			return gano;
+		}	
+	}
+
+	for (i=18;i<100;i=i+9){			//diagonal 2
+		if(tablero[i]==0)
+			break;
+		else if( !(tablero[i] == tablero[i-11]) )
+			break;
+		else if(i==90){
+			gano = 1;
+			return gano;
+		}	
+	}	
+
+
 	return gano;
+}
+
+int guardar_tablero(int *tablero){
+	FILE *file;
+	int i,j;	
+	file=fopen("tablero.txt","w");
+	for(i=0;i<10;i++){
+		for(j=0;j<10;j++)
+			fprintf(file,tablero[i*10+j]);
+		fprintf(file,"/n");	
+	}
+	fclose(file);
+	return 0;
+		
+}
+
+int main(){
+	int tablero[100];
+	int jugadores, turno;
+	int i;
+	pid_t jugadores[5];
+
+	for (i=0;i<100;i++)
+		tablero[i]=0;
+
+		
+	
+	
+
 }
