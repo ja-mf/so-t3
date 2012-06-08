@@ -28,3 +28,17 @@
 
 
 Recomiendo ver man ftok, shmget, shmat y shmdt para informacion mas especifica D:
+
+
+3.1c    - int semget(key_t key, int nsmes, int semflg);
+             Retorna el identificador de un semaforo asociado con el argumento key.
+             En caso de no haber semaforo asociado a key y semflg vale 1, o key tiene el valor IPC_PRIVATE,
+             un nuevo conjunto de nsmems semaforos es creado.
+ 
+       - int semop(int semid, struct sembuf *sops, unsigned nsops);
+             Operacion con sobre semaforos indicados en semid.
+             Struct sembuf *sops: operacion a realizar sobre un semaforo del arreglo, indicado por     nsops.
+	   - int semctl(int semid, int semnum, int cmd, ...);
+	         Realiza operacion de control dado por cmd, sobre el semaforo semid, o en el semnum-avo     semaforo de dicho conjunto.
+	         El llamado puede tener 4 argumentos, en este caso siendo de tipo union,denominado unio    n semun.
+
