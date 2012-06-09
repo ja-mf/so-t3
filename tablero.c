@@ -84,7 +84,8 @@ int comprobar(int *tablero){
 	return gano;
 }
 
-int guardar_tablero(int *tablero){
+int guardar_tablero(int *tablero) {
+	/*
 	FILE *file;
 	int i,j;	
 	file=fopen("tablero.txt","w");
@@ -94,6 +95,7 @@ int guardar_tablero(int *tablero){
 		fprintf(file,"/n");	
 	}
 	fclose(file);
+	*/
 	return 0;
 		
 }

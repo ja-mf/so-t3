@@ -1,9 +1,9 @@
 all: palGato m_palGato
 
-palGato: palGato.c
+palGato: palGato.c comun.h
 		gcc -o palGato palGato.c
 
-m_palGato: moderador.c tablero.o
+m_palGato: moderador.c tablero.o comun.h
 		gcc -o m_palGato moderador.c tablero.o
 
 tablero.o: tablero.c tablero.h
@@ -11,5 +11,5 @@ tablero.o: tablero.c tablero.h
 
 clean:
 	rm *.o
-	rm /var/palGato.lock
+	rm /tmp/palGato.lock
 
