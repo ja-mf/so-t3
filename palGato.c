@@ -50,6 +50,7 @@ int main (int argc, char **argv) {
 	// en este momento, las variables de la memoria compartida
 	// son ocupables
 
+	
 	juego->jugadores++;
 	printf("j: %d\n", juego->jugadores);
 
