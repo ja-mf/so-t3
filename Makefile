@@ -11,5 +11,6 @@ tablero.o: tablero.c tablero.h
 
 clean:
 	rm *.o
+	rm palGato m_palGato
 	rm /tmp/palGato.lock
 
