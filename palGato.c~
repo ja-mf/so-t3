@@ -6,7 +6,6 @@
 #include <errno.h>
 
 #include "comun.h"
-#include "tablero.h"
 
 int main (int argc, char **argv) {
 	int shm_id;

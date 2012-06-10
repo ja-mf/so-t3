@@ -45,7 +45,6 @@ int main(int argc, char ** argv) {
 	shm_addr->jugadores = 0;
 	shm_addr->turno=0;
 	shm_addr->gano=0;
-	shm_addr->jugadas=0;
 	for (i=0;i<100;i++)
 		shm_addr->tablero[i] = 0;
 	// inicializacion de semaforos

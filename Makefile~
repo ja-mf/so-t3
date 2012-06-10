@@ -9,7 +9,7 @@ m_palGato: moderador.c tablero.o comun.o
 tablero.o: tablero.c tablero.h
 		gcc -c tablero.c
 
-comun.o: comun.c comun.h
+tablero.o: comun.c comun.h
 		gcc -c comun.c
 
 clean:
