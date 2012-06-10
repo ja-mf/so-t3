@@ -10,7 +10,8 @@ tablero.o: tablero.c tablero.h
 		gcc -c tablero.c
 
 clean:
-	rm *.o
-	rm palGato m_palGato
-	rm /tmp/palGato.lock
+	rm -f *.o
+	rm -f palGato m_palGato
+	rm -f /tmp/palGato.lock
+	./remove_shm
 

@@ -12,14 +12,17 @@ int main(int argc, char ** argv) {
 	int shm_id;
 	partida * shm_addr;
 	key_t key;
+	
+	struct shmid_ds shm_info;
 
 	// creacion del archivo lock
 	FILE * flock = fopen(lock, "w+");
 	fclose(flock);
 
 	key = ftok(lock, id);
-	printf("key: %d\n", (int) key);
+//	printf("key: %d\n", (int) key);
 
+	// verificacion de existencia de memoria con el mismo key (debug)
 	if (shm_id = shmget(key, SHM_SIZE, 0) > 0) {
 		printf("error, exists in %d, deleting\n", shm_id); 
 		if(shmctl(shm_id, IPC_RMID, 0) == -1) 
@@ -31,9 +34,12 @@ int main(int argc, char ** argv) {
 	if (shm_id <= 0)
 		printf("shmget failed: %d\n", errno);
 	
+	// atachar la memoria compartida al espacio actual
 	shm_addr = (partida *) shmat(shm_id, NULL, 0);
 
 	printf("moderador, shm_id %d\n", shm_id);
+
+	// inicializacion de variables en memoria compartida
 	shm_addr->jugadores = 0;
 
 	printf("esperando jugadores\n");
