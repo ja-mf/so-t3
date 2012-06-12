@@ -8,12 +8,18 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <string.h>
 
 #define SHM_SIZE sizeof(partida) 
+#define lock "/tmp/palGato.lock"
+#define semaforo "/tmp/semaforo.lock"
+#define id 'F'
 
-const char * lock = "/tmp/palGato.lock";
-const char * semaforo = "/tmp/semaforo.lock";
-int id = 'F';
+//const char * lock = "/tmp/palGato.lock";
+//const char * semaforo = "/tmp/semaforo.lock";
+//int id = 'F';
 
 typedef struct partida {
 	int turno;
@@ -31,8 +37,8 @@ union semaphore_union {
 };
 
 //semaforos
-static void inicializar(int,int);
-static void destruir(int);
-static void wait(int);
-static void signal(int);
+void inicializar(int,int);
+void destruir(int);
+void wait(int, int);
+void signal(int, int);
 #endif

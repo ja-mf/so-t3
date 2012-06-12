@@ -12,7 +12,7 @@ int main(int argc, char ** argv) {
 	int shm_id;
 	partida * shm_addr;
 	key_t key;
-	int wrt, rd;
+	int wrt, rd, s;
 	int i;
 	
 	struct shmid_ds shm_info;
@@ -48,12 +48,17 @@ int main(int argc, char ** argv) {
 	shm_addr->jugadas=0;
 	for (i=0;i<100;i++)
 		shm_addr->tablero[i] = 0;
+
 	// inicializacion de semaforos
+	// conjunto de 2 semaforos: 0 -> lectura, 1 -> escritura
+	s = semget (ftok(semaforo, id), 2, 0666 | IPC_CREAT);
+	inicializar(0, s);
+/*
 	wrt = semget ( ftok(semaforo, 'w'), 1 , 0666 | IPC_CREAT ); 
 	inicializar(0,wrt);
 	rd = semget ( ftok(semaforo, 'r'), 1 , 0666 | IPC_CREAT ); 
 	inicializar(0,rd);
-
+*/
 	/*printf("esperando jugadores\n");
 	while(shm_addr->jugadores == 0);
 	printf("llego jugador\n");

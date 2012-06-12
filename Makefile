@@ -14,7 +14,7 @@ comun.o: comun.c comun.h
 
 clean:
 	rm -f *.o
-	rm -f palGato m_palGato
+#	rm -f palGato m_palGato
 	rm -f /tmp/palGato.lock
-	./remove_shm
+	./remove_ipc
 

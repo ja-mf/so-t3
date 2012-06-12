@@ -37,6 +37,9 @@ int main (int argc, char **argv) {
 	// atachar la memoria al proceso actual
 	juego = (partida *) shmat(shm_id, NULL, 0);
 
+	// informacion de la memoria compartida
+	shmctl(shm_id, IPC_STAT, &shminfo);	
+
 /*	
 	if(shm_addr == (partida *) - 1) 
 		fprintf(stderr, "shmat faild %d\n", errno);
@@ -55,7 +58,7 @@ int main (int argc, char **argv) {
 	/* Proceso Jugador */
 	/*
 	idea:
-	1.- saber que jugador es
+	1.- saber que jugador es (verificar si no hay mas de 4 jugadores/instancias)
 	2.- inicializar semaforos
 	3.- intentar jugar
 	3.1 .- actualizar tablero
@@ -68,15 +71,28 @@ int main (int argc, char **argv) {
 	printf("j: %d\n", juego->jugadores);
 	*/
 	
-	int id_jugador;
-	int wrt;
-        int rd;
+	// 1.- verificacion de numero de jugadores
+	printf("hay %d jugadores atachados a memoria\n", (int) shminfo.shm_nattch - 1);
+	
+	if (shminfo.shm_nattch == 7) {
+		printf("Ya hay 5 jugadores");
+		exit(0);
+	}
+
+	int id_jugador = shminfo.shm_nattch - 1;
+	int sems;
 	int jugada = -1;
 
-	//1 y 2
-	wrt = semget ( ftok(semaforo, 'w'), 1 , 0666  ); //  Pedimos un semaphore.
-        rd = semget ( ftok(semaforo, 'r'), 1 , 0666  ); //  Pedimos un semaphore.
-	wait(wrt);
+	// 1 y 2
+
+	// obteniendo el conjunto de semaforos creado por moderador
+	// sem_num = 0 -> read
+	// sem_num = 1 -> write
+	sems = semget ( ftok(semaforo, id), 0 , 0666  ); //  Pedimos un semaphore.
+
+	while(1);
+/*
+	wait(sems, 0);
 	if(juego->jugadores > 4){
 		printf("No se pueden agregar mas jugadores \n");
 		return -1;	
@@ -90,7 +106,7 @@ int main (int argc, char **argv) {
 	while(1){
 		if(jugada == -1){
 			printf("Ingrese Jugada : ");
-			scanf("%d",jugada);
+			scanf("%d", &jugada);
 			if(jugada < 0 && jugada > 99){
 				jugada = -1;
 				printf("Jugada Invalida\n"); 			
@@ -133,5 +149,5 @@ int main (int argc, char **argv) {
 		signal(rd);
 
 	}
-	
+*/	
 }
