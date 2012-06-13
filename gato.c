@@ -13,7 +13,7 @@ void interfaz(int *tablero)
 	//int pulso;
 	WINDOW *ventana[lado][lado];			//dimensiones de subventanas
 	int matrix[lado][lado];		//tablero debe ser matriz 2D
-	int j,k,cont=0,jugadores[max_players]={1,1,1,1,1};		//jugadores => array para saber que jugadores estan disponibles
+	int j,k,cont=0;		
 	//int turno = 1,retorno;
 	initscr();								//incializar biblio ncurses
 	cbreak();								//tomar caracteres de entrada
@@ -37,7 +37,7 @@ void interfaz(int *tablero)
 				mvwprintw(ventana[k][j],2,1,"*VENT%d*\n\n",cont++);
 				move(3,1);
 				matrix[k][j]=tablero[10*j + k];
-				if(tablero[k][j] != -1)				
+				if(matrix[k][j] != -1)				
 					wbkgd(ventana[k][j],COLOR_PAIR(matrix[k][j] + 1));
 				box(ventana[k][j],ACS_VLINE,ACS_HLINE);
 				wrefresh(ventana[k][j]);
