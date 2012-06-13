@@ -13,9 +13,8 @@ int main(int argc, char ** argv) {
 	partida * shm_addr;
 	key_t key;
 	int s;
-	int i;
-	short jugadores;
-	
+	int i, j;
+
 	struct shmid_ds shminfo;
 
 	// creacion del archivo lock
@@ -23,7 +22,6 @@ int main(int argc, char ** argv) {
 	fclose(flock);
 
 	key = ftok(lock, id);
-//	printf("key: %d\n", (int) key);
 
 	// verificacion de existencia de memoria con el mismo key (debug)
 	if (shm_id = shmget(key, SHM_SIZE, 0) > 0) {
@@ -48,12 +46,13 @@ int main(int argc, char ** argv) {
 	shm_addr->jugadas	= 0;
 	shm_addr->jugadores	= 0;
 
-	for (i = 0; i < 100; i++)
-		shm_addr->tablero[i] = -1;
+	for (i = 0; i < 10; i++)
+		for (j = 0; j < 10; j++)
+			shm_addr->tablero[i][j] = -1;
 
 	// inicializacion de semaforos
 	// conjunto de 2 semaforos: 0 -> lectura, 1 -> escritura
-	s = semget (ftok(semaforo, id), 6, 0666 | IPC_CREAT);
+	s = semget (ftok(lock, id), 6, 0666 | IPC_CREAT);
 	inicializar(s);
 
 	shmctl(shm_id, IPC_STAT, &shminfo);
@@ -73,26 +72,21 @@ int main(int argc, char ** argv) {
 		lock_s(s, shm_addr->turno);
 		printf("bloqueado semaforo %d\n", shm_addr->turno);
 
-		// ver numero de jugadores
-		shmctl(shm_id, IPC_STAT, &shminfo);
-
+//		if (comprobar(shm_addr->tablero)) {
+//			sprintf(shm_addr->msg, "Gano el jugador %d", shm_addr->turno);
+//			shm_addr->gano = 1;
+//			break;
+//		}
+		
 		printf("turno+1: %d, jugadores: %d, proximo turno: %d\n",shm_addr->turno+1,shm_addr->jugadores, (shm_addr->turno+1) % (shm_addr->jugadores - 1));
 		shm_addr->turno = (shm_addr->turno+1) % (shm_addr->jugadores);
-
+		
+		// proximo turno == 0 indica nueva ronda
+		if (shm_addr->turno == 0 && shm_addr->jugadas != 0)
+			shm_addr->ronda++; 
+		
 		// actualizar semaforo comun a la cantidad actual de jugadores
 		njugadores(s, shm_addr->jugadores - 1); 
 		sleep(1);
 	}
-
-/*
-	wrt = semget ( ftok(semaforo, 'w'), 1 , 0666 | IPC_CREAT ); 
-	inicializar(0,wrt);
-	rd = semget ( ftok(semaforo, 'r'), 1 , 0666 | IPC_CREAT ); 
-	inicializar(0,rd);
-*/
-	/*printf("esperando jugadores\n");
-	while(shm_addr->jugadores == 0);
-	printf("llego jugador\n");
-	*/
-	while(1);
 }

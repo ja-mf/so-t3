@@ -30,58 +30,53 @@ Numero del proceso en la posicion del arreglo
 */
 
 
-int comprobar(int *tablero){
+int comprobar(int **tablero){
 	int i,j;
-	int gano = 0;
 	
-	for (i=0;i<100;i=i+10){			//de izquierda a derecha
+	for (i=0;i<10;i=i++){			//de izquierda a derecha
 		for(j=1;j<10;j++)
-			if(tablero[i+j]==0)
+			if(tablero[i][j]==-1)
 				break;
-			else if( !(tablero[i+j] == tablero[i+j-1]) )
+			else if( !(tablero[i][j] == tablero[i][j-1]) )
 				break;
 			else if(j==9){
-				gano = 1;
-				return gano;
+				return 1;
 			}	
 	}
 	
-	for (i=0;i<10;i++){			//de arriba a abajo
-		for(j=1;j<100;j=j+10)
-			if(tablero[i+j]==0)
+	for (j=0;j<10;j++){			//de arriba a abajo
+		for(i=1;i<10;i=j++)
+			if(tablero[i][j]==-1)
 				break;
-			else if( !(tablero[i+j] == tablero[i+j-10]) )
+			else if( !(tablero[i][j] == tablero[i-1][j]) )
 				break;
-			else if(j==90){
-				gano = 1;
-				return gano;
+			else if(i==9){
+				return 1;
 			}
 	}
 	
-	for (i=11;i<100;i=i+11){			//diagonal 1
-		if(tablero[i]==0)
+	for (i=1;i<10;i++){			//diagonal 1
+		if(tablero[i][i]==-1)
 			break;
-		else if( !(tablero[i] == tablero[i-11]) )
+		else if( !(tablero[i][i] == tablero[i-1][i-1]) )
 			break;
-		else if(i==99){
-			gano = 1;
-			return gano;
+		else if(i==9){
+			return 1;
 		}	
 	}
 
-	for (i=18;i<100;i=i+9){			//diagonal 2
-		if(tablero[i]==0)
+	for (i=1;i<10;i=i++){			//diagonal 2
+		if(tablero[i][9-i]==-1)
 			break;
-		else if( !(tablero[i] == tablero[i-11]) )
+		else if( !(tablero[i][9-i] == tablero[i-1][i+1]) )
 			break;
-		else if(i==90){
-			gano = 1;
-			return gano;
+		else if(i==9){
+			return 1;
 		}	
 	}	
 
 
-	return gano;
+	return 0;
 }
 
 int guardar_tablero(int *tablero) {

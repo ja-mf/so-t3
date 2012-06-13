@@ -5,16 +5,16 @@
 #define lado 10
 #define max_players 5
 
-int interfaz(int *tablero)
+void interfaz(int **tablero)
 {
 
-	mmask_t mascara;
-	MEVENT raton;							//variables para el mouse
-	int pulso;
+	//mmask_t mascara;
+	//MEVENT raton;							//variables para el mouse
+	//int pulso;
 	WINDOW *ventana[lado][lado];			//dimensiones de subventanas
-	int matrix[lado][lado] = tablero;		//tablero debe ser matriz 2D
-	int j,k,retorno,cont=0,turno=1,jugadores[max_players]={1,0,0,1,0};		//jugadores => array para saber que jugadores estan disponibles
-
+//	int matrix[lado][lado] = tablero;		//tablero debe ser matriz 2D
+	int j,k,cont=0,jugadores[max_players]={1,1,1,1,1};		//jugadores => array para saber que jugadores estan disponibles
+	//int turno = 1,retorno;
 	initscr();								//incializar biblio ncurses
 	cbreak();								//tomar caracteres de entrada
 	keypad(stdscr,TRUE);					//mapeo de teclado
@@ -24,6 +24,7 @@ int interfaz(int *tablero)
 	box(stdscr,ACS_VLINE, ACS_HLINE);		//ventana con lineas horizontales y verticales
 	refresh();
 	
+
 	for (j=0;j<lado;j++)
 		for (k=0;k<lado;k++){
 		//Crear ventanas
@@ -35,11 +36,22 @@ int interfaz(int *tablero)
 				keypad(ventana[k][j],TRUE);
 				mvwprintw(ventana[k][j],2,1,"*VENT%d*\n\n",cont++);
 				move(3,1);
-				matrix[k][j]=0;
+				//tablero[k][j]=0;
+				if(tablero[k][j] != -1)				
+					wbkgd(ventana[k][j],COLOR_PAIR(tablero[k][j] + 1));
 				box(ventana[k][j],ACS_VLINE,ACS_HLINE);
 				wrefresh(ventana[k][j]);
 			}
 		}
+
+	
+	start_color();								//color a subventanas, cuando se seleccione alguna
+ 		init_pair(1,COLOR_WHITE,COLOR_BLUE);
+ 		init_pair(2,COLOR_MAGENTA,COLOR_WHITE);
+ 		init_pair(3,COLOR_RED,COLOR_GREEN);
+ 		init_pair(4,COLOR_BLUE,COLOR_YELLOW);
+ 		init_pair(5,COLOR_GREEN,COLOR_MAGENTA);
+	
 
 	//box(stdscr,ACS_VLINE,ACS_HLINE);
 	for (j=0;j<lado;j++)							//refrescar subventanas	
@@ -49,14 +61,8 @@ int interfaz(int *tablero)
  			wrefresh(ventana[k][j]);
 			}
 
- 		start_color();								//color a subventanas, cuando se seleccione alguna
- 		init_pair(1,COLOR_WHITE,COLOR_BLUE);
- 		init_pair(2,COLOR_MAGENTA,COLOR_WHITE);
- 		init_pair(3,COLOR_RED,COLOR_GREEN);
- 		init_pair(4,COLOR_BLUE,COLOR_YELLOW);
- 		init_pair(5,COLOR_GREEN,COLOR_MAGENTA);
 			
- 		mascara=mousemask(ALL_MOUSE_EVENTS,NULL);		//Registra click en mouse
+ 		/*mascara=mousemask(ALL_MOUSE_EVENTS,NULL);		//Registra click en mouse
  		while ((toupper(pulso=getch())) !='S'){
 	 		if (pulso==KEY_MOUSE){
 				getmouse(&raton);
@@ -68,9 +74,9 @@ int interfaz(int *tablero)
 					}	
 				for (j=0;j<lado;j++)					//Se marca subventana que registro el click
 					for (k=0;k<lado;k++) {
-						if(wenclose(ventana[k][j],raton.y,raton.x) && matrix[k][j]==0){
+						if(wenclose(ventana[k][j],raton.y,raton.x) && tablero[k][j]==0){
 			 				mvwprintw(ventana[k][j],3,1,"Acción");
-							matrix[k][j]=turno;
+							/*tablero[k][j]=turno;
 			 				wbkgd(ventana[k][j],COLOR_PAIR(turno++));
 							box(ventana[k][j],ACS_VLINE,ACS_HLINE);
 							refresh();
@@ -84,10 +90,10 @@ int interfaz(int *tablero)
 					mvprintw(3,1,"Acción detectada\n");
 				 	mvprintw(4,1,"en coordenadas (%d,%d)\n",raton.y,raton.x);
 			 	}
-			}
+			}*/
 
 		 	//box(stdscr,ACS_VLINE,ACS_HLINE);
-			for (j=0;j<lado;j++)					//refresca subventanas, ultimos cambios
+		/*	for (j=0;j<lado;j++)					//refresca subventanas, ultimos cambios
 				for (k=0;k<lado;k++) {		
 		 			box(ventana[k][j],ACS_VLINE,ACS_HLINE);
 		 			refresh();
@@ -95,15 +101,16 @@ int interfaz(int *tablero)
 		 		}
 			if (turno>max_players)				//resetea turnos
 				turno=1;
+		*/
+		//endwin();					//salir de modo ncurses		
+		//return retorno;
 		
-		return retorno;
-		
-		} 
+//		} 
 
 /*	FILE * tablero = fopen("chipamocli.txt","w");
 	for (j=0;j<lado;j++){   
 		for (k=0;k<lado;k++) {
-			fprintf(tablero,"%d ",matrix[k][j]);
+			fprintf(tablero,"%d ",tablero[k][j]);
 			//fprintf(tablero,"%d ",retorno);
 		}
 		fprintf(tablero,"\n");
@@ -113,6 +120,6 @@ int interfaz(int *tablero)
 
 	 //nocbreak();
 	 endwin();					//salir de modo ncurses
-	 exit(0);
+	 //exit(0);
 
-} 
+}

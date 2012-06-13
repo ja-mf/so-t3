@@ -14,7 +14,6 @@
 
 #define SHM_SIZE sizeof(partida) 
 #define lock "/tmp/palGato.lock"
-#define semaforo "/tmp/semaforo.lock"
 #define id 'F'
 
 //const char * lock = "/tmp/palGato.lock";
@@ -23,10 +22,12 @@
 
 typedef struct partida {
 	int turno;
-	int tablero[100];
+	int tablero [10][10];
 	int gano;
 	int jugadas;
 	int jugadores;
+	int ronda;
+	char msg[30];
 } partida;
 
 union semaphore_union {

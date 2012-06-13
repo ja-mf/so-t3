@@ -8,13 +8,14 @@
 #include "comun.h"
 #include "tablero.h"
 
-void mostrarTablero(int * tablero) {
+void mostrarTablero(int tablero[][]) {
 	int i, j;
 	for (i = 0; i < 10; i++) {
 		for (j = 0; j < 10; j++) 
-			printf("%d ", tablero[i*10+j]);
+			printf("%d ", tablero[i][j]);
 		printf("\n");
 	}
+	printf("\n");
 }
 
 int main (int argc, char **argv) {
@@ -80,22 +81,24 @@ int main (int argc, char **argv) {
 	printf("j: %d\n", juego->jugadores);
 	*/
 	
-	// 1.- verificacion de numero de jugadores
+	// 1.- verificacion de numero de jugadores/ronda
 	printf("hay %d jugadores atachados a memoria\n", (int) shminfo.shm_nattch - 1);
 	
-	if (shminfo.shm_nattch == 7) {
-		printf("Ya hay 5 jugadores");
+	if (shminfo.shm_nattch == 7 || juego->ronda > 0) {
+		printf("No es posible entrar\nYa hay 5 jugadores o se completo una ronda");
 		exit(0);
 	}
-	juego->jugadores++;
-	int id_jugador = shminfo.shm_nattch - 2;
-	int sems;
-	int jugada = -1;
 	
-	// 1 y 2
+//	juego->msg = "Entro jugador"
 
+	juego->jugadores++;
+
+	int id_jugador = shminfo.shm_nattch - 2;
+	int jugada[2];
+	int sems;
+	
 	// obteniendo el conjunto de semaforos creado por moderador
-	sems = semget (ftok(semaforo, id), 0 , 0666); 
+	sems = semget (ftok(lock, id), 0 , 0666); 
 	printf("id jugador = %d", id_jugador);
 	printf("turno (instancia): %d\n", juego->turno);
 
@@ -103,7 +106,10 @@ int main (int argc, char **argv) {
 
 	while(1) {
 		lock_s(sems, 5);
+
+		// se termino una jugada, mostrar tablero y mensaje comun
 		mostrarTablero(juego->tablero);
+		printf("%s\n", juego->msg);
 
 		if (juego->turno != id_jugador)
 			continue;
@@ -111,78 +117,21 @@ int main (int argc, char **argv) {
 		lock_s(sems, id_jugador);
 		printf("bloqueado semaforo (instancia) %d\n", juego->turno);
 
-		printf("palGato> ");
-		scanf("%d", &jugada);
+		do {
+			printf("palGato> ");
+			scanf("%d %d", &jugada[0], &jugada[1]);
 
-		// comprobar jugada
-//		if (jugada < 0 || jugada > 99 || juego->tablero[jugada] != -1) {
-//			printf("jugada invalida\n");
-//			continue;
-//		}
+			// comprobar jugada
+			if (jugada < 0 || jugada > 99 || juego->tablero[jugada[0]][jugada[1]] != -1) {
+				printf("jugada invalida\n");
+				jugada[0] = -1;
+			}
+		} while (jugada[0] == -1);
 			
-		juego->tablero[jugada] = id_jugador;
+		juego->tablero[jugada[0]][jugada[1]] = id_jugador;
 		juego->jugadas++;
 
 		unlock_s(sems, id_jugador);
 		printf("desbloqueado semaforo (instancia)%d\n", juego->turno);
 	}
-/*
-	wait(sems, 0);
-	if(juego->jugadores > 4){
-		printf("No se pueden agregar mas jugadores \n");
-		return -1;	
-	}	
-	else{
-	id_jugador = juego->jugadores;
-	juego->jugadores++;
-	}
-	signal(wrt);
-	//3 y 4
-	while(1){
-		if(jugada == -1){
-			printf("Ingrese Jugada : ");
-			scanf("%d", &jugada);
-			if(jugada < 0 && jugada > 99){
-				jugada = -1;
-				printf("Jugada Invalida\n"); 			
-			}
-		}
-		
-		wait(wrt);
-		if(juego->turno == id_jugador){
-			if(juego->tablero[jugada] == -1){
-				
-				juego->tablero[jugada] = id_jugador;		  //juega
-				juego->jugadas++;
-				if (comprobar(juego->tablero)){
-					juego->gano = 1;
-					printf("FELICITACIONES!! Has Ganado");					
-					}
-				else
-					juego->turno = (juego->turno+1)%juego->jugadores; //pasa el turno				
-			}
-			else{
-				jugada = -1;					//no pasa el turno y se pide de nuevo jugada
-				printf("Jugada Invalida\n");						
-			}		
-		}
-		signal(wrt);
-		
-		wait(rd);
-		//mostrar tablero
-		
-		if(juego->gano == 1){
-			printf("FIN!! \nGano %d",juego->turno);
-			signal(rd);			
-			return 1;		
-		}
-		if(juego->jugadas > 100){
-			printf("Fin del Juego\nNo hay ganador");
-			signal(rd);
-			return 0;		
-		}
-		signal(rd);
-
-	}
-*/	
 }

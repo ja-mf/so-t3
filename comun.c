@@ -10,19 +10,8 @@ void inicializar(int sem_id)
 
 	sem_union.val = 1;
 	semctl(sem_id, 5, SETVAL, sem_union);
-	/*
-    if (semctl(sem_id, 0, SETVAL, sem_union) == -1) 
-    {
-        printf("Error. Inicializacion 0 fallida %d\n", errno);
-        exit(1);
-    }
-
-	if (semctl(sem_id, 1, SETVAL, sem_union) == -1) {
-		printf("Error. Inicializacion 1 fallida %d\n", errno);
-		exit(1);
-	}
-	*/
 }
+
 // numero de jugadores
 void njugadores(int sem_id, int n)
 {
@@ -70,3 +59,4 @@ void unlock_s(int sem_id, int sem_num)
         exit(2);
     }
 }
+
