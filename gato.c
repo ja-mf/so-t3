@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <ncurses.h>
 
-#define lado 5
+#define lado 10
 #define max_players 5
 
-main()
+int interfaz(int *tablero)
 {
 
 	mmask_t mascara;
@@ -13,7 +13,7 @@ main()
 	int pulso;
 	WINDOW *ventana[lado][lado];			//dimensiones de subventanas
 	int matrix[lado][lado];
-	int j,k,cont=0,turno=1,jugadores[max_players]={1,0,0,1,0};		//jugadores => array para saber que jugadores estan disponibles
+	int j,k,retorno,cont=0,turno=1,jugadores[max_players]={1,0,0,1,0};		//jugadores => array para saber que jugadores estan disponibles
 
 	initscr();								//incializar biblio ncurses
 	cbreak();								//tomar caracteres de entrada
@@ -27,26 +27,26 @@ main()
 	for (j=0;j<lado;j++)
 		for (k=0;k<lado;k++){
 		//Crear ventanas
-			if((ventana[j][k]=newwin(5,10,(k+1)*5,(j+1)*10))==NULL){ //(DimensionX, DimensionY, X,Y)
+			if((ventana[k][j]=newwin(5,10,(j+1)*5,(k+1)*10))==NULL){ //(DimensionX, DimensionY, X,Y)
 				perror("newwin");
 				exit(-1);
 			}
 			else {
-				keypad(ventana[j][k],TRUE);
-				mvwprintw(ventana[j][k],2,1,"*VENT%d*\n\n",cont++);
+				keypad(ventana[k][j],TRUE);
+				mvwprintw(ventana[k][j],2,1,"*VENT%d*\n\n",cont++);
 				move(3,1);
-				matrix[j][k]=0;
-				box(ventana[j][k],ACS_VLINE,ACS_HLINE);
-				wrefresh(ventana[j][k]);
+				matrix[k][j]=0;
+				box(ventana[k][j],ACS_VLINE,ACS_HLINE);
+				wrefresh(ventana[k][j]);
 			}
 		}
 
 	//box(stdscr,ACS_VLINE,ACS_HLINE);
 	for (j=0;j<lado;j++)							//refrescar subventanas	
 		for (k=0;k<lado;k++){
-			box(ventana[j][k],ACS_VLINE,ACS_HLINE);
+			box(ventana[k][j],ACS_VLINE,ACS_HLINE);
 			refresh();
- 			wrefresh(ventana[j][k]);
+ 			wrefresh(ventana[k][j]);
 			}
 
  		start_color();								//color a subventanas, cuando se seleccione alguna
@@ -68,13 +68,14 @@ main()
 					}	
 				for (j=0;j<lado;j++)					//Se marca subventana que registro el click
 					for (k=0;k<lado;k++) {
-						if(wenclose(ventana[j][k],raton.y,raton.x) && matrix[j][k]==0){
-			 				mvwprintw(ventana[j][k],3,1,"Acción");
-							matrix[j][k]=turno;
-			 				wbkgd(ventana[j][k],COLOR_PAIR(turno++));
-							box(ventana[j][k],ACS_VLINE,ACS_HLINE);
+						if(wenclose(ventana[k][j],raton.y,raton.x) && matrix[k][j]==0){
+			 				mvwprintw(ventana[k][j],3,1,"Acción");
+							matrix[k][j]=turno;
+			 				wbkgd(ventana[k][j],COLOR_PAIR(turno++));
+							box(ventana[k][j],ACS_VLINE,ACS_HLINE);
 							refresh();
-							wrefresh(ventana[j][k]);
+							wrefresh(ventana[k][j]);
+							retorno = j*lado+k;
 						}
 					}
  			
@@ -88,23 +89,27 @@ main()
 		 	//box(stdscr,ACS_VLINE,ACS_HLINE);
 			for (j=0;j<lado;j++)					//refresca subventanas, ultimos cambios
 				for (k=0;k<lado;k++) {		
-		 			box(ventana[j][k],ACS_VLINE,ACS_HLINE);
+		 			box(ventana[k][j],ACS_VLINE,ACS_HLINE);
 		 			refresh();
-		 			wrefresh(ventana[j][k]);
+		 			wrefresh(ventana[k][j]);
 		 		}
 			if (turno>max_players)				//resetea turnos
 				turno=1;
+		
+		return retorno;
+		
 		} 
 
-	FILE * tablero = fopen("chipamocli.txt","w");
-	for (k=0;k<lado;k++){   
-		for (j=0;j<lado;j++) {
-			fprintf(tablero,"%d ",matrix[j][k]);
+/*	FILE * tablero = fopen("chipamocli.txt","w");
+	for (j=0;j<lado;j++){   
+		for (k=0;k<lado;k++) {
+			fprintf(tablero,"%d ",matrix[k][j]);
+			//fprintf(tablero,"%d ",retorno);
 		}
 		fprintf(tablero,"\n");
 	}
 
-	fclose(tablero);
+	fclose(tablero);		*/
 
 	 //nocbreak();
 	 endwin();					//salir de modo ncurses
