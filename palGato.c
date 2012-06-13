@@ -8,6 +8,15 @@
 #include "comun.h"
 #include "tablero.h"
 
+void mostrarTablero(int * tablero) {
+	int i, j;
+	for (i = 0; i < 10; i++) {
+		for (j = 0; j < 10; j++) 
+			printf("%d ", tablero[i*10+j]);
+		printf("\n");
+	}
+}
+
 int main (int argc, char **argv) {
 	int shm_id;
 	void * shm_addr;
@@ -32,7 +41,7 @@ int main (int argc, char **argv) {
 	
 	// esperar para al menos la inicializacion de variables
 	// en moderador
-	sleep(1);
+//	sleep(1);
 
 	// atachar la memoria al proceso actual
 	juego = (partida *) shmat(shm_id, NULL, 0);
@@ -79,18 +88,36 @@ int main (int argc, char **argv) {
 		exit(0);
 	}
 
-	int id_jugador = shminfo.shm_nattch - 1;
+	int id_jugador = shminfo.shm_nattch - 2;
 	int sems;
 	int jugada = -1;
-
+	
 	// 1 y 2
 
 	// obteniendo el conjunto de semaforos creado por moderador
-	// sem_num = 0 -> read
-	// sem_num = 1 -> write
-	sems = semget ( ftok(semaforo, id), 0 , 0666  ); //  Pedimos un semaphore.
+	sems = semget (ftok(semaforo, id), 0 , 0666); 
+	printf("id jugador = %d", id_jugador);
+	printf("turno (instancia): %d\n", juego->turno);
+	while(1) {
+		lock_s(sems, juego->turno);
+		printf("bloqueado semaforo (instancia) %d\n", juego->turno);
+		if (juego->turno == id_jugador) {
+			printf("palGato> ");
+			scanf("%d", &jugada);
 
-	while(1);
+		// comprobar jugada
+//		if (jugada < 0 || jugada > 99 || juego->tablero[jugada] == -1) {
+//			printf("jugada invalida\n");
+//			continue;
+//		}
+			
+			juego->tablero[jugada] = id_jugador;
+			juego->jugadas++;
+			unlock_s(sems, id_jugador);
+			printf("desbloqueado semaforo (instancia)%d\n", juego->turno);
+		} else 
+			mostrarTablero(juego->tablero);
+	}
 /*
 	wait(sems, 0);
 	if(juego->jugadores > 4){
@@ -115,7 +142,7 @@ int main (int argc, char **argv) {
 		
 		wait(wrt);
 		if(juego->turno == id_jugador){
-			if(juego->tablero[jugada] == 0){
+			if(juego->tablero[jugada] == -1){
 				
 				juego->tablero[jugada] = id_jugador;		  //juega
 				juego->jugadas++;

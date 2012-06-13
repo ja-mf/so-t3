@@ -23,7 +23,6 @@
 
 typedef struct partida {
 	int turno;
-	int jugadores;
 	int tablero[100];
 	int gano;
 	int jugadas;
@@ -37,8 +36,12 @@ union semaphore_union {
 };
 
 //semaforos
-void inicializar(int,int);
+void inicializar(int);
 void destruir(int);
-void wait(int, int);
-void signal(int, int);
+void lock_s(int, int);
+void unlock_s(int, int);
+
+// enumerando jugadores
+enum { J1, J2, J3, J4, J5 };
+
 #endif

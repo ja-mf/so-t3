@@ -12,10 +12,11 @@ int main(int argc, char ** argv) {
 	int shm_id;
 	partida * shm_addr;
 	key_t key;
-	int wrt, rd, s;
+	int s;
 	int i;
+	short jugadores;
 	
-	struct shmid_ds shm_info;
+	struct shmid_ds shminfo;
 
 	// creacion del archivo lock
 	FILE * flock = fopen(lock, "w+");
@@ -42,17 +43,42 @@ int main(int argc, char ** argv) {
 	printf("moderador, shm_id %d\n", shm_id);
 
 	// inicializacion de variables en memoria compartida
-	shm_addr->jugadores = 0;
-	shm_addr->turno=0;
-	shm_addr->gano=0;
-	shm_addr->jugadas=0;
-	for (i=0;i<100;i++)
-		shm_addr->tablero[i] = 0;
+	shm_addr->turno 	= 0;
+	shm_addr->gano 		= 0;
+	shm_addr->jugadas	= 0;
+
+	for (i = 0; i < 100; i++)
+		shm_addr->tablero[i] = -1;
 
 	// inicializacion de semaforos
 	// conjunto de 2 semaforos: 0 -> lectura, 1 -> escritura
-	s = semget (ftok(semaforo, id), 2, 0666 | IPC_CREAT);
-	inicializar(0, s);
+	s = semget (ftok(semaforo, id), 6, 0666 | IPC_CREAT);
+	inicializar(s);
+
+	shmctl(shm_id, IPC_STAT, &shminfo);
+	
+	// turno del jugador 1
+	shm_addr->turno = 0;
+//	unlock_s(s, 0);
+	while(1) {
+		// inicio del turno
+		unlock_s(s, shm_addr->turno);
+		printf("desbloqueado semaforo %d\n", shm_addr->turno);
+
+		// esperar a que la instancia bloquee el semaforo
+		sleep(1);
+
+		// esperar fin de la jugada
+		lock_s(s, shm_addr->turno);
+		printf("bloqueado semaforo %d\n", shm_addr->turno);
+
+		// ver numero de jugadores
+		shmctl(shm_id, IPC_STAT, &shminfo);
+		printf("proximo turno: %d\n", (shm_addr->turno+1) % ((int) shminfo.shm_nattch - 2));
+		shm_addr->turno = (shm_addr->turno+1) % ((int) shminfo.shm_nattch - 2);
+		sleep(1);
+	}
+
 /*
 	wrt = semget ( ftok(semaforo, 'w'), 1 , 0666 | IPC_CREAT ); 
 	inicializar(0,wrt);
