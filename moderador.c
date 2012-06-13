@@ -46,6 +46,7 @@ int main(int argc, char ** argv) {
 	shm_addr->turno 	= 0;
 	shm_addr->gano 		= 0;
 	shm_addr->jugadas	= 0;
+	shm_addr->jugadores	= 0;
 
 	for (i = 0; i < 100; i++)
 		shm_addr->tablero[i] = -1;
@@ -74,8 +75,12 @@ int main(int argc, char ** argv) {
 
 		// ver numero de jugadores
 		shmctl(shm_id, IPC_STAT, &shminfo);
-		printf("proximo turno: %d\n", (shm_addr->turno+1) % ((int) shminfo.shm_nattch - 2));
-		shm_addr->turno = (shm_addr->turno+1) % ((int) shminfo.shm_nattch - 2);
+
+		printf("turno+1: %d, jugadores: %d, proximo turno: %d\n",shm_addr->turno+1,shm_addr->jugadores, (shm_addr->turno+1) % (shm_addr->jugadores - 1));
+		shm_addr->turno = (shm_addr->turno+1) % (shm_addr->jugadores);
+
+		// actualizar semaforo comun a la cantidad actual de jugadores
+		njugadores(s, shm_addr->jugadores - 1); 
 		sleep(1);
 	}
 

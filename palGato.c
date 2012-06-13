@@ -87,7 +87,7 @@ int main (int argc, char **argv) {
 		printf("Ya hay 5 jugadores");
 		exit(0);
 	}
-
+	juego->jugadores++;
 	int id_jugador = shminfo.shm_nattch - 2;
 	int sems;
 	int jugada = -1;
@@ -98,25 +98,33 @@ int main (int argc, char **argv) {
 	sems = semget (ftok(semaforo, id), 0 , 0666); 
 	printf("id jugador = %d", id_jugador);
 	printf("turno (instancia): %d\n", juego->turno);
+
+	mostrarTablero(juego->tablero);
+
 	while(1) {
-		lock_s(sems, juego->turno);
+		lock_s(sems, 5);
+		mostrarTablero(juego->tablero);
+
+		if (juego->turno != id_jugador)
+			continue;
+
+		lock_s(sems, id_jugador);
 		printf("bloqueado semaforo (instancia) %d\n", juego->turno);
-		if (juego->turno == id_jugador) {
-			printf("palGato> ");
-			scanf("%d", &jugada);
+
+		printf("palGato> ");
+		scanf("%d", &jugada);
 
 		// comprobar jugada
-//		if (jugada < 0 || jugada > 99 || juego->tablero[jugada] == -1) {
+//		if (jugada < 0 || jugada > 99 || juego->tablero[jugada] != -1) {
 //			printf("jugada invalida\n");
 //			continue;
 //		}
 			
-			juego->tablero[jugada] = id_jugador;
-			juego->jugadas++;
-			unlock_s(sems, id_jugador);
-			printf("desbloqueado semaforo (instancia)%d\n", juego->turno);
-		} else 
-			mostrarTablero(juego->tablero);
+		juego->tablero[jugada] = id_jugador;
+		juego->jugadas++;
+
+		unlock_s(sems, id_jugador);
+		printf("desbloqueado semaforo (instancia)%d\n", juego->turno);
 	}
 /*
 	wait(sems, 0);

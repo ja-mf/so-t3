@@ -7,6 +7,9 @@ void inicializar(int sem_id)
 
     sem_union.array = 0;
 	semctl(sem_id, 0, SETALL, sem_union);
+
+	sem_union.val = 1;
+	semctl(sem_id, 5, SETVAL, sem_union);
 	/*
     if (semctl(sem_id, 0, SETVAL, sem_union) == -1) 
     {
@@ -20,6 +23,15 @@ void inicializar(int sem_id)
 	}
 	*/
 }
+// numero de jugadores
+void njugadores(int sem_id, int n)
+{
+	union semaphore_union sem_union;
+
+	sem_union.val = n;
+	semctl(sem_id, 5, SETVAL, sem_union);
+}
+
 
 // Destruir semaforos
 void destruir (int sem_id) {

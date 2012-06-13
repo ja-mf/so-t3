@@ -26,6 +26,7 @@ typedef struct partida {
 	int tablero[100];
 	int gano;
 	int jugadas;
+	int jugadores;
 } partida;
 
 union semaphore_union {
