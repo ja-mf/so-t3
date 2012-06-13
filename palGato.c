@@ -4,6 +4,7 @@
 #include <sys/shm.h>
 #include <unistd.h>
 #include <errno.h>
+#include <signal.h>
 
 #include "comun.h"
 #include "tablero.h"
@@ -18,11 +19,31 @@ void mostrarTablero(int * tablero) {
 	printf("\n");
 }
 
+void termino (int signum) {
+	printf("terminando instancia, liberando recursos\n");
+
+	if (shmdt(juego) == -1) 
+		printf("fallo al detachar memoria %d\n", errno);
+
+	exit(0);	
+}
+
 int main (int argc, char **argv) {
-	int shm_id;
-	void * shm_addr;
-	partida * juego;
-	key_t key;
+
+	// manejando termino del proceso
+	struct sigaction term_action;
+	term_action.sa_handler = termino;
+	sigemptyset(&term_action.sa_mask);
+	term_action.sa_flags = 0;
+
+	sigaction (SIGINT, &term_action, NULL);
+	sigaction (SIGHUP, &term_action, NULL);
+	sigaction (SIGTERM, &term_action, NULL);
+
+//	int shm_id;
+//	void * shm_addr;
+//	partida * juego;
+//	key_t key;
 
 	struct shmid_ds shminfo;
 
@@ -50,17 +71,6 @@ int main (int argc, char **argv) {
 	// informacion de la memoria compartida
 	shmctl(shm_id, IPC_STAT, &shminfo);	
 
-/*	
-	if(shm_addr == (partida *) - 1) 
-		fprintf(stderr, "shmat faild %d\n", errno);
-
-	printf("shmat en %X\n", shm_addr);
-
-	juego = (partida *) shm_addr;
-*/
-//	shmctl(shm_id, IPC_STAT, &shminfo);	
-//	printf("lpid: %d\n", shminfo.shm_perm.mode);
-
 	// en este momento, las variables de la memoria compartida
 	// son ocupables
 
@@ -76,26 +86,23 @@ int main (int argc, char **argv) {
 	*/
 	///////////////////////////////////////////////////////////
 
-	/*	
-	juego->jugadores++;
-	printf("j: %d\n", juego->jugadores);
-	*/
-	
 	// 1.- verificacion de numero de jugadores/ronda
 	printf("hay %d jugadores atachados a memoria\n", (int) shminfo.shm_nattch - 1);
 	
 	if (shminfo.shm_nattch == 7 || juego->ronda > 0) {
 		printf("No es posible entrar\nYa hay 5 jugadores o se completo una ronda");
-		exit(0);
+		kill(getpid(), SIGTERM);
 	}
 	
-//	juego->msg = "Entro jugador"
-
-	juego->jugadores++;
-
 	int id_jugador = shminfo.shm_nattch - 2;
 	int jugada;
 	int sems;
+
+//	juego->msg = "Entro jugador";
+
+	juego->pid_jugadores[id_jugador] = getpid(); 
+	juego->jugadores++;
+
 	
 	// obteniendo el conjunto de semaforos creado por moderador
 	sems = semget (ftok(lock, id), 0 , 0666); 

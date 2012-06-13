@@ -8,14 +8,44 @@
 #include "tablero.h"
 #include "comun.h"
 
+void termino (int sig) {
+	// matando procesos
+	int i;
+	for (i = 0; i < 5; i++)
+		if (shm_addr->pid_jugadores[i] != 0)
+			kill(shm_addr->pid_jugadores[i], SIGTERM);
+
+	if (shmctl(shm_id, IPC_RMID, 0) == -1) { 
+		printf("error en remover memoria compartida %d\n", errno);
+		exit(1);
+	}
+	
+	if (semctl(s, 0, IPC_RMID, NULL) == -1) {
+		printf("error en remover el conjunto de semaforos %d\n", errno);
+		exit(1);
+	}
+
+	remove(lock);
+	exit(0);
+}
+
 int main(int argc, char ** argv) {
-	int shm_id;
-	partida * shm_addr;
-	key_t key;
-	int s;
+//	int shm_id;
+//	partida * shm_addr;
+//	key_t key;
+//	int s;
 	int i, j;
 
 	struct shmid_ds shminfo;
+	struct sigaction term_action;
+
+	term_action.sa_handler = termino;
+	sigemptyset(&term_action.sa_mask);
+	term_action.sa_flags = 0;
+
+	sigaction (SIGINT, &term_action, NULL);
+	sigaction (SIGHUP, &term_action, NULL);
+	sigaction (SIGTERM, &term_action, NULL);
 
 	// creacion del archivo lock
 	FILE * flock = fopen(lock, "w+");
@@ -72,11 +102,11 @@ int main(int argc, char ** argv) {
 		lock_s(s, shm_addr->turno);
 		printf("bloqueado semaforo %d\n", shm_addr->turno);
 
-		if (comprobar(shm_addr->tablero)) {
-			sprintf(shm_addr->msg, "Gano el jugador %d", shm_addr->turno);
-			shm_addr->gano = 1;
-			break;
-		}
+//		if (comprobar(shm_addr->tablero)) {
+//			sprintf(shm_addr->msg, "Gano el jugador %d", shm_addr->turno);
+//			shm_addr->gano = 1;
+//			break;
+//		}
 		
 		printf("turno+1: %d, jugadores: %d, proximo turno: %d\n",shm_addr->turno+1,shm_addr->jugadores, (shm_addr->turno+1) % (shm_addr->jugadores - 1));
 		shm_addr->turno = (shm_addr->turno+1) % (shm_addr->jugadores);
@@ -89,4 +119,8 @@ int main(int argc, char ** argv) {
 		njugadores(s, shm_addr->jugadores - 1); 
 		sleep(1);
 	}
+
+
+
+
 }

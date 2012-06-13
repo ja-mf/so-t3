@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <signal.h>
 
 #define SHM_SIZE sizeof(partida) 
 #define lock "/tmp/palGato.lock"
@@ -28,6 +29,7 @@ typedef struct partida {
 	int jugadores;
 	int ronda;
 	char msg[30];
+	pid_t pid_jugadores[5];
 } partida;
 
 union semaphore_union {
@@ -42,5 +44,10 @@ void inicializar(int);
 void destruir(int);
 void lock_s(int, int);
 void unlock_s(int, int);
+
+int shm_id, s;
+partida * juego;
+partida * shm_addr;
+key_t key;
 
 #endif
