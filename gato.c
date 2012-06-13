@@ -12,6 +12,7 @@ main()
 	MEVENT raton;							//variables para el mouse
 	int pulso;
 	WINDOW *ventana[lado][lado];			//dimensiones de subventanas
+	int matrix[lado][lado];
 	int j,k,cont=0,turno=1,jugadores[max_players]={1,0,0,1,0};		//jugadores => array para saber que jugadores estan disponibles
 
 	initscr();								//incializar biblio ncurses
@@ -34,6 +35,7 @@ main()
 				keypad(ventana[j][k],TRUE);
 				mvwprintw(ventana[j][k],2,1,"*VENT%d*\n\n",cont++);
 				move(3,1);
+				matrix[j][k]=0;
 				box(ventana[j][k],ACS_VLINE,ACS_HLINE);
 				wrefresh(ventana[j][k]);
 			}
@@ -66,8 +68,9 @@ main()
 					}	
 				for (j=0;j<lado;j++)					//Se marca subventana que registro el click
 					for (k=0;k<lado;k++) {
-						if(wenclose(ventana[j][k],raton.y,raton.x)){
+						if(wenclose(ventana[j][k],raton.y,raton.x) && matrix[j][k]==0){
 			 				mvwprintw(ventana[j][k],3,1,"Acción");
+							matrix[j][k]=turno;
 			 				wbkgd(ventana[j][k],COLOR_PAIR(turno++));
 							box(ventana[j][k],ACS_VLINE,ACS_HLINE);
 							refresh();
@@ -92,7 +95,19 @@ main()
 			if (turno>max_players)				//resetea turnos
 				turno=1;
 		} 
+
+	FILE * tablero = fopen("chipamocli.txt","w");
+	for (k=0;k<lado;k++){   
+		for (j=0;j<lado;j++) {
+			fprintf(tablero,"%d ",matrix[j][k]);
+		}
+		fprintf(tablero,"\n");
+	}
+
+	fclose(tablero);
+
 	 //nocbreak();
 	 endwin();					//salir de modo ncurses
 	 exit(0);
+
 } 
