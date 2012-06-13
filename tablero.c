@@ -87,11 +87,11 @@ void mostrarTablero(int *tablero){
 		pritnf("|   ||    ||    ||    ||    ||   ||    ||    ||    ||    |\n");
 		for(j=0;j<10;j++){
 			switch(tablero[10*i + j]){
-				case 0:	printf(ANSI_COLOR_RED     "| 0 |"ANSI_COLOR_RESET);
-				case 1:	printf(ANSI_COLOR_GREEN   "| 1 |"ANSI_COLOR_RESET);
-				case 2:	printf(ANSI_COLOR_YELLOW  "| 2 |"ANSI_COLOR_RESET);
-				case 3:	printf(ANSI_COLOR_BLUE    "| 3 |"ANSI_COLOR_RESET);			
-				case 4:	printf(ANSI_COLOR_CYAN    "| 4 |"ANSI_COLOR_RESET);
+				case 0:	printf("|" ANSI_COLOR_RED     " 0 " ANSI_COLOR_RESET "|");
+				case 1:	printf("|" ANSI_COLOR_GREEN   " 1 " ANSI_COLOR_RESET "|");
+				case 2:	printf("|" ANSI_COLOR_YELLOW  " 2 " ANSI_COLOR_RESET "|");
+				case 3:	printf("|" ANSI_COLOR_BLUE    " 3 " ANSI_COLOR_RESET "|");			
+				case 4:	printf("|" ANSI_COLOR_CYAN    " 4 " ANSI_COLOR_RESET "|");
 				default:	printf("|   |");			
 			}			
 		}
