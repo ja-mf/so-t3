@@ -12,7 +12,7 @@ int interfaz(int *tablero)
 	MEVENT raton;							//variables para el mouse
 	int pulso;
 	WINDOW *ventana[lado][lado];			//dimensiones de subventanas
-	int matrix[lado][lado];
+	int matrix[lado][lado] = tablero;		//tablero debe ser matriz 2D
 	int j,k,retorno,cont=0,turno=1,jugadores[max_players]={1,0,0,1,0};		//jugadores => array para saber que jugadores estan disponibles
 
 	initscr();								//incializar biblio ncurses
