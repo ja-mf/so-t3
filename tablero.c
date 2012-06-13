@@ -29,7 +29,6 @@ Numero del proceso en la posicion del arreglo
 0 0 0 0 0 0 0 0 0 0
 */
 
-
 int comprobar(int *tablero){
 	int i,j;
 	
@@ -79,18 +78,28 @@ int comprobar(int *tablero){
 	return 0;
 }
 
-int guardar_tablero(int *tablero) {
-	/*
-	FILE *file;
-	int i,j;	
-	file=fopen("tablero.txt","w");
+
+void mostrarTablero(int *tablero){
+	int i;
+	int j;
 	for(i=0;i<10;i++){
-		for(j=0;j<10;j++)
-			fprintf(file,tablero[i*10+j]);
-		fprintf(file,"/n");	
+		printf("-------------------------------------------------\n");
+		pritnf("|   |    |    |    |    |   |    |    |    |    |\n");
+		for(j=0;j<10;j++){
+			switch(tablero[10*i + j]){
+				case 0:	printf(ANSI_COLOR_RED     "| %d |"ANSI_COLOR_RESET,tablero[10*i + j]);
+				case 1:	printf(ANSI_COLOR_GREEN   "| %d |"ANSI_COLOR_RESET,tablero[10*i + j]);
+				case 2:	printf(ANSI_COLOR_YELLOW  "| %d |"ANSI_COLOR_RESET,tablero[10*i + j]);
+				case 3:	printf(ANSI_COLOR_BLUE    "| %d |"ANSI_COLOR_RESET,tablero[10*i + j]);			
+				case 4:	printf(ANSI_COLOR_CYAN    "| %d |"ANSI_COLOR_RESET,tablero[10*i + j]);
+				default:	printf("|   |");			
+			}			
+		}
+		pritnf("\n|   |    |    |    |    |   |    |    |    |    |\n");
+		printf("-------------------------------------------------\n");
 	}
-	fclose(file);
-	*/
-	return 0;
-		
 }
+
+
+
+
