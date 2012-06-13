@@ -48,7 +48,7 @@ int main(int argc, char ** argv) {
 
 	for (i = 0; i < 10; i++)
 		for (j = 0; j < 10; j++)
-			shm_addr->tablero[i][j] = -1;
+			shm_addr->tablero[i*10+j] = -1;
 
 	// inicializacion de semaforos
 	// conjunto de 2 semaforos: 0 -> lectura, 1 -> escritura
@@ -72,11 +72,11 @@ int main(int argc, char ** argv) {
 		lock_s(s, shm_addr->turno);
 		printf("bloqueado semaforo %d\n", shm_addr->turno);
 
-//		if (comprobar(shm_addr->tablero)) {
-//			sprintf(shm_addr->msg, "Gano el jugador %d", shm_addr->turno);
-//			shm_addr->gano = 1;
-//			break;
-//		}
+		if (comprobar(shm_addr->tablero)) {
+			sprintf(shm_addr->msg, "Gano el jugador %d", shm_addr->turno);
+			shm_addr->gano = 1;
+			break;
+		}
 		
 		printf("turno+1: %d, jugadores: %d, proximo turno: %d\n",shm_addr->turno+1,shm_addr->jugadores, (shm_addr->turno+1) % (shm_addr->jugadores - 1));
 		shm_addr->turno = (shm_addr->turno+1) % (shm_addr->jugadores);

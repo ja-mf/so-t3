@@ -30,7 +30,7 @@ Numero del proceso en la posicion del arreglo
 */
 
 
-int comprobar(int **tablero){
+int comprobar(int *tablero){
 	int i,j;
 	
 	for (i=0;i<10;i=i++){			//de izquierda a derecha

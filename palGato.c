@@ -8,11 +8,11 @@
 #include "comun.h"
 #include "tablero.h"
 
-void mostrarTablero(int tablero[][]) {
+void mostrarTablero(int * tablero) {
 	int i, j;
 	for (i = 0; i < 10; i++) {
 		for (j = 0; j < 10; j++) 
-			printf("%d ", tablero[i][j]);
+			printf("%d ", tablero[i*10+j]);
 		printf("\n");
 	}
 	printf("\n");
@@ -94,7 +94,7 @@ int main (int argc, char **argv) {
 	juego->jugadores++;
 
 	int id_jugador = shminfo.shm_nattch - 2;
-	int jugada[2];
+	int jugada;
 	int sems;
 	
 	// obteniendo el conjunto de semaforos creado por moderador
@@ -119,16 +119,16 @@ int main (int argc, char **argv) {
 
 		do {
 			printf("palGato> ");
-			scanf("%d %d", &jugada[0], &jugada[1]);
+			scanf("%d", &jugada);
 
 			// comprobar jugada
-			if (jugada < 0 || jugada > 99 || juego->tablero[jugada[0]][jugada[1]] != -1) {
+			if (jugada < 0 || jugada > 99 || juego->tablero[jugada] != -1) {
 				printf("jugada invalida\n");
-				jugada[0] = -1;
+				jugada = -1;
 			}
-		} while (jugada[0] == -1);
+		} while (jugada == -1);
 			
-		juego->tablero[jugada[0]][jugada[1]] = id_jugador;
+		juego->tablero[jugada] = id_jugador;
 		juego->jugadas++;
 
 		unlock_s(sems, id_jugador);

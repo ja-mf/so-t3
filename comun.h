@@ -22,7 +22,7 @@
 
 typedef struct partida {
 	int turno;
-	int tablero [10][10];
+	int tablero[100];
 	int gano;
 	int jugadas;
 	int jugadores;
@@ -42,8 +42,5 @@ void inicializar(int);
 void destruir(int);
 void lock_s(int, int);
 void unlock_s(int, int);
-
-// enumerando jugadores
-enum { J1, J2, J3, J4, J5 };
 
 #endif
