@@ -5,14 +5,14 @@
 #define lado 10
 #define max_players 5
 
-void interfaz(int **tablero)
+void interfaz(int *tablero)
 {
 
 	//mmask_t mascara;
 	//MEVENT raton;							//variables para el mouse
 	//int pulso;
 	WINDOW *ventana[lado][lado];			//dimensiones de subventanas
-//	int matrix[lado][lado] = tablero;		//tablero debe ser matriz 2D
+	int matrix[lado][lado] = tablero;		//tablero debe ser matriz 2D
 	int j,k,cont=0,jugadores[max_players]={1,1,1,1,1};		//jugadores => array para saber que jugadores estan disponibles
 	//int turno = 1,retorno;
 	initscr();								//incializar biblio ncurses
@@ -36,9 +36,9 @@ void interfaz(int **tablero)
 				keypad(ventana[k][j],TRUE);
 				mvwprintw(ventana[k][j],2,1,"*VENT%d*\n\n",cont++);
 				move(3,1);
-				//tablero[k][j]=0;
+				matrix[k][j]=tablero[10*j + k];
 				if(tablero[k][j] != -1)				
-					wbkgd(ventana[k][j],COLOR_PAIR(tablero[k][j] + 1));
+					wbkgd(ventana[k][j],COLOR_PAIR(matrix[k][j] + 1));
 				box(ventana[k][j],ACS_VLINE,ACS_HLINE);
 				wrefresh(ventana[k][j]);
 			}
