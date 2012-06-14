@@ -9,17 +9,11 @@
 #include "comun.h"
 #include "tablero.h"
 
-void mostrarTablero(int * tablero) {
-	int i, j;
-	for (i = 0; i < 10; i++) {
-		for (j = 0; j < 10; j++) 
-			printf("%d ", tablero[i*10+j]);
-		printf("\n");
-	}
-	printf("\n");
-}
-
+// secuencia de salida para el jugador
 void termino (int signum) {
+	if (juego->gano)
+		printf("Gano el jugador %d\n", juego->turno);
+
 	printf("terminando instancia, liberando recursos\n");
 
 	if (shmdt(juego) == -1) 
@@ -40,11 +34,6 @@ int main (int argc, char **argv) {
 	sigaction (SIGHUP, &term_action, NULL);
 	sigaction (SIGTERM, &term_action, NULL);
 
-//	int shm_id;
-//	void * shm_addr;
-//	partida * juego;
-//	key_t key;
-
 	struct shmid_ds shminfo;
 
 	// chequea la existencia de /tmp/palGato.lock
@@ -61,10 +50,6 @@ int main (int argc, char **argv) {
 	while((shm_id = shmget(key, SHM_SIZE, 0666)) < 0);
 	printf("instancia, shm_id %d\n", shm_id);
 	
-	// esperar para al menos la inicializacion de variables
-	// en moderador
-//	sleep(1);
-
 	// atachar la memoria al proceso actual
 	juego = (partida *) shmat(shm_id, NULL, 0);
 
@@ -79,10 +64,11 @@ int main (int argc, char **argv) {
 	/*
 	idea:
 	1.- saber que jugador es (verificar si no hay mas de 4 jugadores/instancias)
-	2.- inicializar semaforos
-	3.- intentar jugar
-	3.1 .- actualizar tablero
-	4.- pasar el turno
+	2.- esperar a que se termine una jugada
+	3.- verificar turno
+	4.- jugar
+	4.1 .- actualizar tablero
+	5.- desbloquear mi semaforo
 	*/
 	///////////////////////////////////////////////////////////
 
@@ -93,34 +79,33 @@ int main (int argc, char **argv) {
 		printf("No es posible entrar\nYa hay 5 jugadores o se completo una ronda");
 		kill(getpid(), SIGTERM);
 	}
-	
+
+	// jugador entro de forma exitosa
 	int id_jugador = shminfo.shm_nattch - 2;
 	int jugada;
 	int sems;
 
-//	juego->msg = "Entro jugador";
-
 	juego->pid_jugadores[id_jugador] = getpid(); 
 	juego->jugadores++;
 
-	
 	// obteniendo el conjunto de semaforos creado por moderador
 	sems = semget (ftok(lock, id), 0 , 0666); 
 	printf("id jugador = %d", id_jugador);
 	printf("turno (instancia): %d\n", juego->turno);
 
-	mostrarTablero(juego->tablero);
+	// mostrar el tablero si es que no es el primer jugador (primer turno)
+	if (id_jugador != 0)
+		mostrarTablero(juego->tablero);
 
 	while(1) {
+		// esperar el termino de una jugada (semaforo comun)
 		lock_s(sems, 5);
-
-		// se termino una jugada, mostrar tablero y mensaje comun
 		mostrarTablero(juego->tablero);
-		printf("%s\n", juego->msg);
 
 		if (juego->turno != id_jugador)
 			continue;
 
+		// esperar mi turno
 		lock_s(sems, id_jugador);
 		printf("bloqueado semaforo (instancia) %d\n", juego->turno);
 
@@ -135,9 +120,13 @@ int main (int argc, char **argv) {
 			}
 		} while (jugada == -1);
 			
+		// actualizar variables de la memoria compartida
 		juego->tablero[jugada] = id_jugador;
 		juego->jugadas++;
-
+		
+		mostrarTablero(juego->tablero);
+		
+		// desbloquear mi semaforo
 		unlock_s(sems, id_jugador);
 		printf("desbloqueado semaforo (instancia)%d\n", juego->turno);
 	}

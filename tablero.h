@@ -12,6 +12,6 @@
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
 int comprobar(int *);
-int mostrarTablero(int *);
+void mostrarTablero(int *);
 
 #endif

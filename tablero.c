@@ -30,24 +30,25 @@ Numero del proceso en la posicion del arreglo
 */
 
 int comprobar(int *tablero){
+	
 	int i,j;
 	
-	for (i=0;i<10;i=i++){			//de izquierda a derecha
-		for(j=1;j<10;j++)
-			if(tablero[i][j]==-1)
+	for (i = 0; i < 10; i = i++){			//de izquierda a derecha
+		for(j = 1; j < 10;j++)
+			if(tablero[i*10 + j]==-1)
 				break;
-			else if( !(tablero[i][j] == tablero[i][j-1]) )
+			else if( !(tablero[i*10 + j] == tablero[i*10 + j - 1]) )
 				break;
 			else if(j==9){
 				return 1;
 			}	
 	}
 	
-	for (j=0;j<10;j++){			//de arriba a abajo
-		for(i=1;i<10;i=j++)
-			if(tablero[i][j]==-1)
+	for (j = 0; j < 10; j++){			//de arriba a abajo
+		for(i = 1; i < 10; i++)
+			if(tablero[i*10 + j]==-1)
 				break;
-			else if( !(tablero[i][j] == tablero[i-1][j]) )
+			else if (tablero[i*10 + j] != tablero[(i-1)*10 + j])
 				break;
 			else if(i==9){
 				return 1;
@@ -55,21 +56,21 @@ int comprobar(int *tablero){
 	}
 	
 	for (i=1;i<10;i++){			//diagonal 1
-		if(tablero[i][i]==-1)
+		if(tablero[i*11]==-1)
 			break;
-		else if( !(tablero[i][i] == tablero[i-1][i-1]) )
+		else if( !(tablero[i*11] == tablero[(i-1)*11]) )
 			break;
 		else if(i==9){
 			return 1;
 		}	
 	}
 
-	for (i=1;i<10;i=i++){			//diagonal 2
-		if(tablero[i][9-i]==-1)
+	for (i=2;i<11;i++){			//diagonal 2
+		if(tablero[i*9]==-1)
 			break;
-		else if( !(tablero[i][9-i] == tablero[i-1][i+1]) )
+		else if( !(tablero[i*9] == tablero[(i-1)*9]) )
 			break;
-		else if(i==9){
+		else if(i==10){
 			return 1;
 		}	
 	}	
@@ -80,26 +81,21 @@ int comprobar(int *tablero){
 
 
 void mostrarTablero(int *tablero){
-	int i;
-	int j;
-	for(i=0;i<10;i++){
-		printf("----------------------------------------------------------\n");
-		pritnf("|   ||    ||    ||    ||    ||   ||    ||    ||    ||    |\n");
-		for(j=0;j<10;j++){
-			switch(tablero[10*i + j]){
-				case 0:	printf("|" ANSI_COLOR_RED     " 0 " ANSI_COLOR_RESET "|");
-				case 1:	printf("|" ANSI_COLOR_GREEN   " 1 " ANSI_COLOR_RESET "|");
-				case 2:	printf("|" ANSI_COLOR_YELLOW  " 2 " ANSI_COLOR_RESET "|");
-				case 3:	printf("|" ANSI_COLOR_BLUE    " 3 " ANSI_COLOR_RESET "|");			
-				case 4:	printf("|" ANSI_COLOR_CYAN    " 4 " ANSI_COLOR_RESET "|");
-				default:	printf("|   |");			
+	int i, j;
+	printf("--0--1--2--3--4--5--6--7--8--9-\n");
+	for(i = 0; i < 10; i++){
+		printf("%d",i); 
+		for(j = 0; j < 10; j++){
+			switch(tablero[10*i + j]) {
+				case 0:	printf("|" ANSI_COLOR_RED     "0" ANSI_COLOR_RESET "|"); break;
+				case 1:	printf("|" ANSI_COLOR_GREEN   "1" ANSI_COLOR_RESET "|"); break;
+				case 2:	printf("|" ANSI_COLOR_YELLOW  "2" ANSI_COLOR_RESET "|"); break;
+				case 3:	printf("|" ANSI_COLOR_BLUE    "3" ANSI_COLOR_RESET "|"); break;		
+				case 4:	printf("|" ANSI_COLOR_CYAN    "4" ANSI_COLOR_RESET "|"); break;
+				default:	printf("| |");			
 			}			
 		}
-		pritnf("\n|   ||    ||    ||    ||    ||   ||    ||    ||    ||    ||\n");
-		printf("----------------------------------------------------------\n");
+		printf("\n");
 	}
+	printf("\n");
 }
-
-
-
-
